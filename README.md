@@ -24,9 +24,11 @@
   <a href="https://github.com/AdmiralMK/calendar12/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License"/>
   </a>
-  [![Latest Release](https://img.shields.io/github/v/release/AdmiralMK/calendar12?style=for-the-badge)](https://github.com/AdmiralMK/calendar12/releases/latest)
 </p>
 
+<p align="center">
+  [![Latest Release](https://img.shields.io/github/v/release/AdmiralMK/calendar12?style=for-the-badge)](https://github.com/AdmiralMK/calendar12/releases/latest)
+</p>
 
 ---
 
