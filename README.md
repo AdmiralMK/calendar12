@@ -26,6 +26,7 @@
   </a>
 </p>
 
+[![Latest Release](https://img.shields.io/github/v/release/AdmiralMK/calendar12?style=for-the-badge)](https://github.com/AdmiralMK/calendar12/releases/latest)
 ---
 
 ## 📖 О приложении
