@@ -1,0 +1,48 @@
+name: calendar12
+description: Приложение Календарь12 - 12 месяцев на одном экране.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # База данных Isar
+  isar: ^3.1.0+1
+  # isar_flutter_libs: ^3.1.0+1  <-- Удалите или закомментируйте
+  isar_flutter_libs:
+    git:
+      url: https://github.com/MrLittleWhite/isar_flutter_libs.git
+      ref: main
+  # Управление состоянием
+  provider: ^6.1.2
+  # Путь к директориям для Isar
+  path_provider: ^2.1.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  # Генератор кода для Isar
+  isar_generator: ^3.1.0+1
+  build_runner: ^2.4.12
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon/
+
+dependency_overrides:
+  isar_flutter_libs:
+    git:
+      url: https://github.com/MrLittleWhite/isar_flutter_libs.git
+      ref: main
+
+flutter_launcher_icons:
+  android: true
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icon/app_icon.png"

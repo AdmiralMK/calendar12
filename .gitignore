@@ -1,0 +1,101 @@
+# Файлы и папки, связанные с Dart/Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+pubspec.lock
+
+# Сгенерированные файлы Isar (генерируются через build_runner)
+*.g.dart
+
+# Символические ссылки iOS
+ios/**/symlink_assertion_*
+
+# Исключения для веб-платформы
+web/favicon.png
+web/icons/Icon-192.png
+web/icons/Icon-512.png
+web/icons/Icon-maskable-192.png
+web/icons/Icon-maskable-512.png
+web/manifest.json
+
+# Метаданные IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Файлы macOS
+.DS_Store
+
+# Файлы Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Android
+**/android/.gradle/
+**/android/captures/
+**/android/gradle-app.setting
+**/android/app/google-services.json
+**/android/app/src/main/res/xml/network_security_config.xml
+**/android/app-profile.apk
+**/android/app-release-unsigned.apk
+**/android/key.properties
+*.jks
+
+# Исключения для Android
+!**/android/local.properties
+!**/android/**/libs/*.jar
+!**/android/**/libs/*.aar
+
+# iOS
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/
+**/ios/**/.symlinks/
+**/ios/**/profile
+**/ios/**/.generated/
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# Исключения для iOS
+!**/ios/Flutter/Debug.xcconfig
+!**/ios/Flutter/Release.xcconfig
+
+# Linux
+**/linux/flutter/ephemeral/
+**/linux/flutter/generated_*
+CMakeLists.txt.user
+
+# macOS
+**/macos/Flutter/ephemeral/
+**/macos/Flutter/GeneratedPluginRegistrant.dart
+**/macos/Flutter/Flutter-Debug.xcconfig
+**/macos/Flutter/Flutter-Release.xcconfig
+
+# Windows
+**/windows/flutter/ephemeral/
+**/windows/flutter/generated_*
+**/windows/runner/Runner.rc
+**/windows/runner/runner.exe.manifest
+**/windows/runner/Runner.vcxproj
+**/windows/runner/Runner.vcxproj.filters
+**/windows/runner/Runner.vcxproj.user
