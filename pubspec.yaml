@@ -9,25 +9,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  # База данных Isar
-  isar: ^3.1.0+1
-  # isar_flutter_libs: ^3.1.0+1  <-- Удалите или закомментируйте
-  isar_flutter_libs:
-    git:
-      url: https://github.com/MrLittleWhite/isar_flutter_libs.git
-      ref: main
+  # Простое хранилище настроек (вместо Isar)
+  shared_preferences: ^2.3.3
   # Управление состоянием
   provider: ^6.1.2
-  # Путь к директориям для Isar
-  path_provider: ^2.1.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
-  # Генератор кода для Isar
-  isar_generator: ^3.1.0+1
-  build_runner: ^2.4.12
+  # Генерация иконок приложения
   flutter_launcher_icons: ^0.13.1
 
 flutter:
@@ -35,12 +26,7 @@ flutter:
   assets:
     - assets/icon/
 
-dependency_overrides:
-  isar_flutter_libs:
-    git:
-      url: https://github.com/MrLittleWhite/isar_flutter_libs.git
-      ref: main
-
+# Настройки генерации иконок
 flutter_launcher_icons:
   android: true
   image_path: "assets/icon/app_icon.png"

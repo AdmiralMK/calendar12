@@ -1,19 +1,26 @@
-/// Провайдер для управления темой приложения и сохранения выбора в БД.
-library;
-
+// Провайдер для управления темой приложения и сохранения выбора в SharedPreferences.
 import 'package:flutter/material.dart';
-import '../database/isar_service.dart';
-import '../models/settings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
 
+  // Ключ для хранения в SharedPreferences
+  static const String _themeModeKey = 'themeModeIndex';
+
   ThemeMode get themeMode => _themeMode;
 
-  /// Загрузка темы из БД при старте
+  /// Загрузка темы из SharedPreferences при старте
   Future<void> loadTheme() async {
-    final settings = await IsarService.getSettings();
-    _themeMode = ThemeMode.values[settings.themeModeIndex];
+    final prefs = await SharedPreferences.getInstance();
+    final themeIndex = prefs.getInt(_themeModeKey) ?? 0;
+    
+    // Безопасная проверка индекса
+    if (themeIndex >= 0 && themeIndex < ThemeMode.values.length) {
+      _themeMode = ThemeMode.values[themeIndex];
+    } else {
+      _themeMode = ThemeMode.system;
+    }
     notifyListeners();
   }
 
@@ -31,9 +38,9 @@ class ThemeProvider extends ChangeNotifier {
         break;
     }
     
-    // Сохраняем в БД
-    final settings = Settings()..themeModeIndex = _themeMode.index;
-    await IsarService.saveSettings(settings);
+    // Сохраняем в SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_themeModeKey, _themeMode.index);
     
     notifyListeners();
   }
