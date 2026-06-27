@@ -1,4 +1,6 @@
 // Главный экран приложения. Содержит селектор года и сетку 3x4 с анимацией.
+//ыаыаыаываываы ыва ыва ыва ы 
+//
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_constants.dart';
