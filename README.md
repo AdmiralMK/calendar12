@@ -49,8 +49,8 @@
 ## 📸 Скриншоты
 
 <p align="center">
-  <img src="screenshots/screenshot_light.png" alt="Light Theme" width="250"/>
-  <img src="screenshots/screenshot_dark.png" alt="Dark Theme" width="250"/>
+  <img src="screenshots/screenshot_light.jpg" alt="Light Theme" width="250"/>
+  <img src="screenshots/screenshot_dark.jpg" alt="Dark Theme" width="250"/>
 </p>
 
 >  *Скриншоты демонстрируют светлую и тёмную темы приложения*
