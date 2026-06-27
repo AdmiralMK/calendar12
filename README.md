@@ -88,8 +88,6 @@
 
 ## 👨‍💻 Автор
 
-**Марков К.Б.**
-
 - 📧 Email: kbmarkov@gmail.com
 - 🐙 GitHub: [AdmiralMK](https://github.com/AdmiralMK)
 - 📅 Год создания: 2026
