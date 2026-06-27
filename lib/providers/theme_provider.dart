@@ -4,18 +4,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
-
-  // Ключ для хранения в SharedPreferences
   static const String _themeModeKey = 'themeModeIndex';
 
   ThemeMode get themeMode => _themeMode;
 
-  /// Загрузка темы из SharedPreferences при старте
   Future<void> loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     final themeIndex = prefs.getInt(_themeModeKey) ?? 0;
     
-    // Безопасная проверка индекса
     if (themeIndex >= 0 && themeIndex < ThemeMode.values.length) {
       _themeMode = ThemeMode.values[themeIndex];
     } else {
@@ -24,7 +20,6 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Переключение темы по кругу: Система -> Светлая -> Темная -> Система
   Future<void> toggleTheme() async {
     switch (_themeMode) {
       case ThemeMode.system:
@@ -38,14 +33,11 @@ class ThemeProvider extends ChangeNotifier {
         break;
     }
     
-    // Сохраняем в SharedPreferences
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_themeModeKey, _themeMode.index);
-    
     notifyListeners();
   }
 
-  /// Получение иконки для текущей темы
   IconData get themeIcon {
     switch (_themeMode) {
       case ThemeMode.system:

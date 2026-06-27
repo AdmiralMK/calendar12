@@ -7,9 +7,7 @@ import 'ui/screens/home_screen.dart';
 import 'ui/themes/app_theme.dart';
 
 void main() async {
-  // Обязательная инициализация биндингов Flutter
   WidgetsFlutterBinding.ensureInitialized();
-
   runApp(const Calendar12App());
 }
 
@@ -20,11 +18,9 @@ class Calendar12App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // Провайдер темы (загружает данные из SharedPreferences)
         ChangeNotifierProvider(
           create: (_) => ThemeProvider()..loadTheme(),
         ),
-        // Провайдер календаря (год)
         ChangeNotifierProvider(
           create: (_) => CalendarProvider(),
         ),

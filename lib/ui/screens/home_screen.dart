@@ -1,13 +1,12 @@
-// Главный экран приложения. Содержит селектор года и сетку 3x4 с анимацией.
-//ыаыаыаываываы ыва ыва ыва ы 
-//
+// Главный экран приложения с анимацией волны при смене года.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../constants/animation_constants.dart';
 import '../../constants/app_constants.dart';
 import '../../localization/app_strings.dart';
 import '../../providers/calendar_provider.dart';
 import '../../providers/theme_provider.dart';
-import '../widgets/month_card.dart';
+import '../widgets/calendar_grid.dart';
 import '../widgets/year_selector.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,13 +18,31 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late final AnimationController _flipController;
+  late final List<Animation<double>> _tileAnimations;
 
   @override
   void initState() {
     super.initState();
+    
     _flipController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: AnimationConstants.totalAnimationDuration,
+    );
+    
+    _tileAnimations = List.generate(
+      AppConstants.monthsInYear,
+      (index) {
+        final start = index * AnimationConstants.staggerDelay;
+        final end = (start + AnimationConstants.tileAnimationDuration).clamp(0.0, 1.0);
+        return CurvedAnimation(
+          parent: _flipController,
+          curve: Interval(
+            start.clamp(0.0, 1.0),
+            end,
+            curve: Curves.easeInOut,
+          ),
+        );
+      },
     );
   }
 
@@ -33,12 +50,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void dispose() {
     _flipController.dispose();
     super.dispose();
-  }
-
-  void _triggerFlipAnimation() {
-    _flipController
-      ..reset()
-      ..forward();
   }
 
   @override
@@ -51,10 +62,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             Expanded(
               child: Consumer<CalendarProvider>(
                 builder: (context, calendarProvider, child) {
-                  return _AnimatedCalendarGrid(
+                  return CalendarGrid(
                     year: calendarProvider.currentYear,
-                    onYearChanged: _triggerFlipAnimation,
-                    flipAnimation: _flipController,
+                    flipController: _flipController,
+                    tileAnimations: _tileAnimations,
                   );
                 },
               ),
@@ -124,58 +135,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 }
 
-/// Отдельный виджет для анимированной сетки календаря
-class _AnimatedCalendarGrid extends StatefulWidget {
-  final int year;
-  final VoidCallback onYearChanged;
-  final Animation<double> flipAnimation;
-
-  const _AnimatedCalendarGrid({
-    required this.year,
-    required this.onYearChanged,
-    required this.flipAnimation,
-  });
-
-  @override
-  State<_AnimatedCalendarGrid> createState() => _AnimatedCalendarGridState();
-}
-
-class _AnimatedCalendarGridState extends State<_AnimatedCalendarGrid> {
-  @override
-  void didUpdateWidget(_AnimatedCalendarGrid oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // ИСПРАВЛЕНО: убрана проверка _previousYear != -1
-    if (oldWidget.year != widget.year) {
-      widget.onYearChanged();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: AppConstants.gridColumns,
-          childAspectRatio: AppConstants.monthCardAspectRatio,
-          crossAxisSpacing: 4,
-          mainAxisSpacing: 4,
-        ),
-        itemCount: AppConstants.monthsInYear,
-        itemBuilder: (context, index) {
-          return MonthCard(
-            month: index + 1,
-            year: widget.year,
-            flipAnimation: widget.flipAnimation,
-            animationDelay: index * 0.05,
-          );
-        },
-      ),
-    );
-  }
-}
-
-/// Виджет заголовка с обработкой тройного тапа
 class _AppTitleWithTripleTap extends StatefulWidget {
   final String title;
   final TextStyle? textStyle;

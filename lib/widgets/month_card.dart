@@ -1,4 +1,5 @@
 // Виджет одной карточки месяца с анимацией переворота.
+// StatefulWidget для управления переключением года в середине анимации.
 import 'package:flutter/material.dart';
 import '../../constants/animation_constants.dart';
 import '../../localization/app_strings.dart';
@@ -20,8 +21,8 @@ class MonthCard extends StatefulWidget {
 }
 
 class _MonthCardState extends State<MonthCard> {
-  late int _displayedYear;
-  int? _pendingYear;
+  late int _displayedYear; // Год, который сейчас отображается
+  int? _pendingYear; // Год, который нужно показать после середины анимации
 
   @override
   void initState() {
@@ -34,10 +35,12 @@ class _MonthCardState extends State<MonthCard> {
   void didUpdateWidget(MonthCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     
+    // Если год изменился - сохраняем его как "ожидающий"
     if (oldWidget.year != widget.year) {
       _pendingYear = widget.year;
     }
     
+    // Если анимация изменилась - переподписываемся
     if (oldWidget.flipAnimation != widget.flipAnimation) {
       oldWidget.flipAnimation.removeListener(_onAnimationUpdate);
       widget.flipAnimation.addListener(_onAnimationUpdate);
@@ -51,11 +54,12 @@ class _MonthCardState extends State<MonthCard> {
   }
 
   void _onAnimationUpdate() {
+    // Когда анимация достигает середины (90°) и есть ожидающий год - переключаем
     if (widget.flipAnimation.value >= 0.5 && 
         _pendingYear != null && 
         _pendingYear != _displayedYear) {
       final newYear = _pendingYear!;
-      _pendingYear = null;
+      _pendingYear = null; // Сначала обнуляем, чтобы избежать повторного вызова
       if (mounted) {
         setState(() {
           _displayedYear = newYear;
@@ -82,22 +86,21 @@ class _MonthCardState extends State<MonthCard> {
         // Угол наклона: 0° → 90° → 0°
         final angle = flipProgress * AnimationConstants.maxRotationAngle;
         
+        // Прозрачность: 1.0 → 0.2 → 1.0
+        final opacity = AnimationConstants.maxOpacity - 
+            (AnimationConstants.maxOpacity - AnimationConstants.minOpacity) * flipProgress;
+        
         // Масштабирование: 1.0 → 0.95 → 1.0
         final scale = 1.0 - 0.05 * flipProgress;
-
-        // ✨ ПРОЗРАЧНОСТЬ ТЕКСТА (линейная с поздним стартом)
-        // Текст полностью виден до 60% поворота (54°)
-        // Затем плавно исчезает к 90°
-        final textOpacity = (1.0 - (flipProgress - 0.6) / 0.4).clamp(0.0, 1.0);
 
         return Transform(
           alignment: Alignment.center,
           transform: Matrix4.identity()..rotateX(angle),
           child: Transform.scale(
             scale: scale,
-            // ✨ ОДИН Opacity для всего содержимого
             child: Opacity(
-              opacity: textOpacity,
+              opacity: opacity,
+              // ИСПОЛЬЗУЕМ _displayedYear, а не widget.year!
               child: _buildCardContent(theme, today, _displayedYear),
             ),
           ),
@@ -122,7 +125,6 @@ class _MonthCardState extends State<MonthCard> {
         padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 6.0),
         child: Column(
           children: [
-            // ✨ БЕЗ отдельного Opacity — прозрачность применяется к родителю
             Text(
               AppStrings.monthNames[widget.month - 1],
               style: theme.textTheme.titleMedium?.copyWith(
@@ -201,15 +203,6 @@ class _MonthCardState extends State<MonthCard> {
                 today.month == widget.month &&
                 today.day == dayNumber);
 
-            Color baseColor;
-            if (isToday) {
-              baseColor = theme.colorScheme.onPrimaryContainer;
-            } else if (isWeekend) {
-              baseColor = theme.colorScheme.error;
-            } else {
-              baseColor = theme.colorScheme.onSurface;
-            }
-
             return Container(
               alignment: Alignment.center,
               decoration: isToday
@@ -221,7 +214,11 @@ class _MonthCardState extends State<MonthCard> {
               child: Text(
                 dayNumber.toString(),
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: baseColor,
+                  color: isToday
+                      ? theme.colorScheme.onPrimaryContainer
+                      : (isWeekend
+                          ? theme.colorScheme.error
+                          : theme.colorScheme.onSurface),
                   fontWeight: isToday ? FontWeight.bold : FontWeight.w500,
                   fontSize: 11,
                 ),

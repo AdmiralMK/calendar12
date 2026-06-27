@@ -18,5 +18,5 @@ class AppConstants {
   
   /// Соотношение сторон для карточки месяца (ширина / высота)
   /// Увеличено для лучшего заполнения пространства
-  static const double monthCardAspectRatio = 0.82;
+  static const double monthCardAspectRatio = 0.84;
 }
