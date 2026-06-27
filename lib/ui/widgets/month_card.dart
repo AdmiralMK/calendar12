@@ -1,14 +1,26 @@
 // Виджет одной карточки месяца с анимацией переворота.
 import 'dart:math' as math;
+// Виджет одной карточки месяца с анимацией переворота.
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../localization/app_strings.dart';
 
 class MonthCard extends StatelessWidget {
   final int month;
+  final int month;
   final int year;
   final Animation<double> flipAnimation;
   final double animationDelay;
+  final Animation<double> flipAnimation;
+  final double animationDelay;
 
+  const MonthCard({
+    super.key,
+    required this.month,
+    required this.year,
+    required this.flipAnimation,
+    this.animationDelay = 0.0,
+  });
   const MonthCard({
     super.key,
     required this.month,
@@ -24,62 +36,6 @@ class MonthCard extends StatelessWidget {
     final daysInMonth = DateTime(year, month + 1, 0).day;
     final firstWeekday = DateTime(year, month, 1).weekday - 1;
 
-    return AnimatedBuilder(
-      animation: flipAnimation,
-      builder: (context, child) {
-        final animationValue = flipAnimation.value;
-        
-        // Если анимация не запущена (value = 0), показываем нормально
-        if (animationValue <= 0.0) {
-          return _buildCardContent(theme, today, daysInMonth, firstWeekday);
-        }
-        
-        // Вычисляем диапазон анимации для этой плитки
-        final start = animationDelay;
-        final end = (animationDelay + 0.4).clamp(0.0, 1.0);
-        
-        // Защита от деления на ноль
-        if (end <= start) {
-          return _buildCardContent(theme, today, daysInMonth, firstWeekday);
-        }
-        
-        // Нормализуем значение анимации для этой плитки (0.0 - 1.0)
-        final staggeredValue = ((animationValue - start) / (end - start)).clamp(0.0, 1.0);
-        
-        // Если эта плитка ещё не начала анимацию
-        if (staggeredValue <= 0.0) {
-          return _buildCardContent(theme, today, daysInMonth, firstWeekday);
-        }
-        
-        // Создаём эффект переворота: 0→1→0
-        final flipProgress = staggeredValue < 0.5 
-            ? staggeredValue * 2 
-            : (1 - staggeredValue) * 2;
-        
-        // Угол наклона: 0° → 90° → 0°
-        final angle = flipProgress * (math.pi / 2);
-        
-        // Прозрачность: 1.0 → 0.3 → 1.0
-        final opacity = 1.0 - 0.7 * flipProgress;
-
-        return Transform(
-          alignment: Alignment.center,
-          transform: Matrix4.rotationX(angle),
-          child: Opacity(
-            opacity: opacity,
-            child: _buildCardContent(theme, today, daysInMonth, firstWeekday),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildCardContent(
-    ThemeData theme,
-    DateTime today,
-    int daysInMonth,
-    int firstWeekday,
-  ) {
     return Card(
       margin: const EdgeInsets.all(2.0),
       elevation: 2.0,
