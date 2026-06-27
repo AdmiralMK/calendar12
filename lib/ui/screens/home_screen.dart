@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.initState();
     _flipController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1500),
     );
   }
 
@@ -139,17 +139,13 @@ class _AnimatedCalendarGrid extends StatefulWidget {
 }
 
 class _AnimatedCalendarGridState extends State<_AnimatedCalendarGrid> {
-  int _previousYear = -1;
-
   @override
   void didUpdateWidget(_AnimatedCalendarGrid oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Проверяем, изменился ли год
-    if (oldWidget.year != widget.year && _previousYear != -1) {
-      // Запускаем анимацию через callback
+    // ИСПРАВЛЕНО: убрана проверка _previousYear != -1
+    if (oldWidget.year != widget.year) {
       widget.onYearChanged();
     }
-    _previousYear = widget.year;
   }
 
   @override
