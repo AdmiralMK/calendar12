@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/AdmiralMK/calendar12/releases">
-    <img src="https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge&logo=flutter" alt="Version"/>
+  <a href="https://github.com/AdmiralMK/calendar12/releases/latest">
+    <img src="https://img.shields.io/github/v/release/AdmiralMK/calendar12?style=for-the-badge&color=blue&logo=flutter" alt="Latest Release"/>
   </a>
   <a href="https://flutter.dev">
     <img src="https://img.shields.io/badge/Flutter-3.27+-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter"/>
@@ -18,17 +18,11 @@
   <a href="https://dart.dev">
     <img src="https://img.shields.io/badge/Dart-3.5+-0175C2?style=for-the-badge&logo=dart&logoColor=white" alt="Dart"/>
   </a>
-  <a href="https://isar.dev">
-    <img src="https://img.shields.io/badge/Database-Isar-FF6B35?style=for-the-badge" alt="Isar"/>
-  </a>
   <a href="https://github.com/AdmiralMK/calendar12/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License"/>
   </a>
 </p>
 
-<p align="center">
-  [![Latest Release](https://img.shields.io/github/v/release/AdmiralMK/calendar12?style=for-the-badge)](https://github.com/AdmiralMK/calendar12/releases/latest)
-</p>
 
 ---
 
