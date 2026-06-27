@@ -1,4 +1,4 @@
-// Главный экран приложения. Содержит селектор года и сетку 3x4.
+// Главный экран приложения. Содержит селектор года и сетку 3x4 с анимацией.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_constants.dart';
@@ -8,8 +8,36 @@ import '../../providers/theme_provider.dart';
 import '../widgets/month_card.dart';
 import '../widgets/year_selector.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  late final AnimationController _flipController;
+
+  @override
+  void initState() {
+    super.initState();
+    _flipController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+  }
+
+  @override
+  void dispose() {
+    _flipController.dispose();
+    super.dispose();
+  }
+
+  void _triggerFlipAnimation() {
+    _flipController
+      ..reset()
+      ..forward();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,30 +45,14 @@ class HomeScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Единая строка с заголовком, темой и выбором года
             _buildHeaderRow(context),
-            
-            // Сетка календаря, занимающая все оставшееся место
             Expanded(
               child: Consumer<CalendarProvider>(
                 builder: (context, calendarProvider, child) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
-                    child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: AppConstants.gridColumns,
-                        childAspectRatio: AppConstants.monthCardAspectRatio,
-                        crossAxisSpacing: 4,
-                        mainAxisSpacing: 4,
-                      ),
-                      itemCount: AppConstants.monthsInYear,
-                      itemBuilder: (context, index) {
-                        return MonthCard(
-                          month: index + 1,
-                          year: calendarProvider.currentYear,
-                        );
-                      },
-                    ),
+                  return _AnimatedCalendarGrid(
+                    year: calendarProvider.currentYear,
+                    onYearChanged: _triggerFlipAnimation,
+                    flipAnimation: _flipController,
                   );
                 },
               ),
@@ -51,14 +63,12 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  /// Строка с заголовком, кнопкой темы и селектором года
   Widget _buildHeaderRow(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
       color: Theme.of(context).colorScheme.primaryContainer,
       child: Row(
         children: [
-          // Заголовок приложения с тройным тапом
           Expanded(
             flex: 2,
             child: _AppTitleWithTripleTap(
@@ -69,7 +79,6 @@ class HomeScreen extends StatelessWidget {
                   ),
             ),
           ),
-          // Кнопка переключения темы
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
               return Padding(
@@ -89,9 +98,7 @@ class HomeScreen extends StatelessWidget {
               );
             },
           ),
-          // Селектор года (компактный)
           const YearSelector(),
-          // Кнопка "Сегодня"
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: IconButton(
@@ -110,6 +117,61 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Отдельный виджет для анимированной сетки календаря
+class _AnimatedCalendarGrid extends StatefulWidget {
+  final int year;
+  final VoidCallback onYearChanged;
+  final Animation<double> flipAnimation;
+
+  const _AnimatedCalendarGrid({
+    required this.year,
+    required this.onYearChanged,
+    required this.flipAnimation,
+  });
+
+  @override
+  State<_AnimatedCalendarGrid> createState() => _AnimatedCalendarGridState();
+}
+
+class _AnimatedCalendarGridState extends State<_AnimatedCalendarGrid> {
+  int _previousYear = -1;
+
+  @override
+  void didUpdateWidget(_AnimatedCalendarGrid oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Проверяем, изменился ли год
+    if (oldWidget.year != widget.year && _previousYear != -1) {
+      // Запускаем анимацию через callback
+      widget.onYearChanged();
+    }
+    _previousYear = widget.year;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: AppConstants.gridColumns,
+          childAspectRatio: AppConstants.monthCardAspectRatio,
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 4,
+        ),
+        itemCount: AppConstants.monthsInYear,
+        itemBuilder: (context, index) {
+          return MonthCard(
+            month: index + 1,
+            year: widget.year,
+            flipAnimation: widget.flipAnimation,
+            animationDelay: index * 0.05,
+          );
+        },
       ),
     );
   }
@@ -135,19 +197,15 @@ class _AppTitleWithTripleTapState extends State<_AppTitleWithTripleTap> {
 
   void _handleTap() {
     final now = DateTime.now();
-    
-    // Если прошло больше 500мс с последнего тапа, сбрасываем счётчик
     if (_lastTapTime == null || now.difference(_lastTapTime!).inMilliseconds > 500) {
       _tapCount = 1;
     } else {
       _tapCount++;
     }
-    
     _lastTapTime = now;
-    
-    // Если это третий тап
+
     if (_tapCount == 3) {
-      _tapCount = 0; // Сбрасываем счётчик
+      _tapCount = 0;
       _showDeveloperInfo();
     }
   }

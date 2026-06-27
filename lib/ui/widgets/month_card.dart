@@ -1,25 +1,85 @@
-// Виджет одной карточки месяца (название + сетка дней).
-// Адаптируется под доступное пространство.
+// Виджет одной карточки месяца с анимацией переворота.
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../localization/app_strings.dart';
 
 class MonthCard extends StatelessWidget {
-  final int month; // 1-12
+  final int month;
   final int year;
+  final Animation<double> flipAnimation;
+  final double animationDelay;
 
-  const MonthCard({super.key, required this.month, required this.year});
+  const MonthCard({
+    super.key,
+    required this.month,
+    required this.year,
+    required this.flipAnimation,
+    this.animationDelay = 0.0,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final today = DateTime.now();
-    
-    // Получаем количество дней в месяце
     final daysInMonth = DateTime(year, month + 1, 0).day;
-    // Получаем день недели первого числа (0 = Пн, 6 = Вс)
-    // В Dart DateTime.weekday: 1=Пн, 7=Вс. Приводим к 0-6.
-    final firstWeekday = DateTime(year, month, 1).weekday - 1; 
+    final firstWeekday = DateTime(year, month, 1).weekday - 1;
 
+    return AnimatedBuilder(
+      animation: flipAnimation,
+      builder: (context, child) {
+        final animationValue = flipAnimation.value;
+        
+        // Если анимация не запущена (value = 0), показываем нормально
+        if (animationValue <= 0.0) {
+          return _buildCardContent(theme, today, daysInMonth, firstWeekday);
+        }
+        
+        // Вычисляем диапазон анимации для этой плитки
+        final start = animationDelay;
+        final end = (animationDelay + 0.4).clamp(0.0, 1.0);
+        
+        // Защита от деления на ноль
+        if (end <= start) {
+          return _buildCardContent(theme, today, daysInMonth, firstWeekday);
+        }
+        
+        // Нормализуем значение анимации для этой плитки (0.0 - 1.0)
+        final staggeredValue = ((animationValue - start) / (end - start)).clamp(0.0, 1.0);
+        
+        // Если эта плитка ещё не начала анимацию
+        if (staggeredValue <= 0.0) {
+          return _buildCardContent(theme, today, daysInMonth, firstWeekday);
+        }
+        
+        // Создаём эффект переворота: 0→1→0
+        final flipProgress = staggeredValue < 0.5 
+            ? staggeredValue * 2 
+            : (1 - staggeredValue) * 2;
+        
+        // Угол наклона: 0° → 90° → 0°
+        final angle = flipProgress * (math.pi / 2);
+        
+        // Прозрачность: 1.0 → 0.3 → 1.0
+        final opacity = 1.0 - 0.7 * flipProgress;
+
+        return Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.rotationX(angle),
+          child: Opacity(
+            opacity: opacity,
+            child: _buildCardContent(theme, today, daysInMonth, firstWeekday),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCardContent(
+    ThemeData theme,
+    DateTime today,
+    int daysInMonth,
+    int firstWeekday,
+  ) {
     return Card(
       margin: const EdgeInsets.all(2.0),
       elevation: 2.0,
@@ -28,7 +88,6 @@ class MonthCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 6.0),
         child: Column(
           children: [
-            // Заголовок месяца
             Text(
               AppStrings.monthNames[month - 1],
               style: theme.textTheme.titleMedium?.copyWith(
@@ -39,11 +98,7 @@ class MonthCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 2),
-            
-            // Дни недели с горизонтальной линией
             _buildWeekDaysRow(theme),
-            
-            // Сетка дней
             Expanded(
               child: _buildDaysGrid(daysInMonth, firstWeekday, theme, today),
             ),
@@ -53,7 +108,6 @@ class MonthCard extends StatelessWidget {
     );
   }
 
-  /// Отрисовка строки с днями недели и горизонтальной линией
   Widget _buildWeekDaysRow(ThemeData theme) {
     return Column(
       children: [
@@ -73,7 +127,6 @@ class MonthCard extends StatelessWidget {
             );
           }).toList(),
         ),
-        // Горизонтальная линия (УМЕНЬШЕНО с 1.5 до 0.5)
         Container(
           margin: const EdgeInsets.symmetric(vertical: 2.0),
           height: 0.5,
@@ -83,11 +136,13 @@ class MonthCard extends StatelessWidget {
     );
   }
 
-  /// Отрисовка сетки дней месяца с вертикальной линией
-  Widget _buildDaysGrid(int daysInMonth, int firstWeekday, ThemeData theme, DateTime today) {
-    // Общее количество ячеек (дни + пустые в начале)
+  Widget _buildDaysGrid(
+    int daysInMonth,
+    int firstWeekday,
+    ThemeData theme,
+    DateTime today,
+  ) {
     final totalCells = daysInMonth + firstWeekday;
-    // Количество строк (максимум 6)
     final rows = (totalCells / 7).ceil();
 
     return Stack(
@@ -102,28 +157,30 @@ class MonthCard extends StatelessWidget {
           itemCount: rows * 7,
           itemBuilder: (context, index) {
             final dayNumber = index - firstWeekday + 1;
-            
             if (index < firstWeekday || dayNumber > daysInMonth) {
               return const SizedBox.shrink();
             }
-
             final isWeekend = (index % 7 == 5 || index % 7 == 6);
-            final isToday = (today.year == year && 
-                            today.month == month && 
-                            today.day == dayNumber);
+            final isToday = (today.year == year &&
+                today.month == month &&
+                today.day == dayNumber);
 
             return Container(
               alignment: Alignment.center,
-              decoration: isToday ? BoxDecoration(
-                color: theme.colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(4),
-              ) : null,
+              decoration: isToday
+                  ? BoxDecoration(
+                      color: theme.colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(4),
+                    )
+                  : null,
               child: Text(
                 dayNumber.toString(),
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isToday 
+                  color: isToday
                       ? theme.colorScheme.onPrimaryContainer
-                      : (isWeekend ? theme.colorScheme.error : theme.colorScheme.onSurface),
+                      : (isWeekend
+                          ? theme.colorScheme.error
+                          : theme.colorScheme.onSurface),
                   fontWeight: isToday ? FontWeight.bold : FontWeight.w500,
                   fontSize: 11,
                 ),
@@ -131,7 +188,6 @@ class MonthCard extends StatelessWidget {
             );
           },
         ),
-        // Вертикальная линия между пятницей и субботой (УМЕНЬШЕНО с 1.5 до 0.5)
         Positioned(
           left: 0,
           right: 0,
@@ -139,18 +195,12 @@ class MonthCard extends StatelessWidget {
           bottom: 0,
           child: Row(
             children: [
-              Expanded(
-                flex: 5,
-                child: Container(),
-              ),
+              Expanded(flex: 5, child: Container()),
               Container(
                 width: 0.5,
                 color: theme.colorScheme.outline.withValues(alpha: 0.3),
               ),
-              Expanded(
-                flex: 2,
-                child: Container(),
-              ),
+              Expanded(flex: 2, child: Container()),
             ],
           ),
         ),
