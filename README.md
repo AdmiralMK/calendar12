@@ -65,9 +65,52 @@
 - Flutter 3.27+
 - Dart 3.5+
 
-### Из исходного кода
 
-1. **Клонируйте репозиторий:**
-   ```bash
-   git clone https://github.com/AdmiralMK/calendar12.git
-   cd calendar12
+---
+
+##  Установка
+
+### Требования
+- Android 5.0+ (API 21)
+- Flutter 3.27+
+- Dart 3.5+
+
+### Шаги установки
+1. Клонируйте репозиторий: `git clone https://github.com/AdmiralMK/calendar12.git`
+2. Перейдите в папку: `cd calendar12`
+3. Установите зависимости: `flutter pub get`
+4. Сгенерируйте код Isar: `dart run build_runner build -d`
+5. Запустите: `flutter run`
+
+---
+
+## 📋 Планы развития
+
+- Добавление заметок и событий к датам
+- Экспорт календаря в PDF
+- Виджет для рабочего стола Android
+- Поддержка праздников разных стран
+- Интеграция с Google Calendar
+- Поддержка iOS и веб-версии
+
+---
+
+## 👨‍💻 Автор
+
+**Марков К.Б.**
+
+- 📧 Email: kbmarkov@gmail.com
+- 🐙 GitHub: [AdmiralMK](https://github.com/AdmiralMK)
+- 📅 Год создания: 2026
+
+---
+
+##  Лицензия
+
+Проект распространяется под лицензией MIT.
+
+---
+
+<p align="center">
+  <sub>Сделано с ❤️ и Flutter</sub>
+</p>
